@@ -1291,6 +1291,9 @@ def genet_large(pretrained=False, num_classes=1000, root='./GENet_params'):
         checkpoint = torch.load(pth_file, map_location='cpu')
         model.load_state_dict(checkpoint['state_dict'], strict=True)
 
+    # NOTE: list of nn.Modules fix
+    model.block_list = nn.ModuleList(model.block_list)
+
     return model
 
 def genet_normal(pretrained=False, num_classes=1000, root='./GENet_params'):
@@ -1312,6 +1315,9 @@ def genet_normal(pretrained=False, num_classes=1000, root='./GENet_params'):
         checkpoint = torch.load(pth_file, map_location='cpu')
         model.load_state_dict(checkpoint['state_dict'], strict=True)
 
+    # NOTE: list of nn.Modules fix
+    model.block_list = nn.ModuleList(model.block_list)
+
     return model
 
 def genet_small(pretrained=False, num_classes=1000, root='./GENet_params'):
@@ -1332,5 +1338,8 @@ def genet_small(pretrained=False, num_classes=1000, root='./GENet_params'):
 
         checkpoint = torch.load(pth_file, map_location='cpu')
         model.load_state_dict(checkpoint['state_dict'], strict=True)
+
+    # NOTE: list of nn.Modules fix
+    model.block_list = nn.ModuleList(model.block_list)
 
     return model
