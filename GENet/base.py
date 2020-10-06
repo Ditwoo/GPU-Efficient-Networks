@@ -3,11 +3,17 @@ Copyright (C) 2010-2020 Alibaba Group Holding Limited
 """
 
 import os
+import re
+import sys
+import errno
 import torch
 from torch import nn
 import torch.nn.functional as F
 import numpy as np
-import uuid
+from torch.hub import download_url_to_file
+
+
+HASH_REGEX = re.compile(r"-([a-f0-9]*)\.")
 
 
 def _create_netblock_list_from_str_(s, no_create=False):
@@ -1681,7 +1687,19 @@ class PlainNet(nn.Module):
         return PlainNet(block_list, pool, num_classes)
 
 
-def genet_large(pretrained=False, num_classes=1000, root="./GENet_params"):
+# NOTE: because files stored in google drive function
+#       `load_state_dict_from_url` will save checkpoint
+#       as `uc` in `~/.cache/torch/checkpoint`.
+#       That's why need to manually download file
+#       using `download_url_to_file`.
+pretrained_states = {
+    "small": "https://drive.google.com/uc?id=1jAkklQlQFPZi4odKUvbKEsNPYSS76GAv",
+    "normal": "https://drive.google.com/uc?id=1rpL0BKI_l5Xg4vN5fHGXPzTna5kW9hfs",
+    "large": "https://drive.google.com/uc?id=1xuyW2GB_kUfJNf2G146rk1sdKuYGxWlE",
+}
+
+
+def genet_large(pretrained=False, num_classes=1000, progress=True):
     """GPU Efficient Net large.
 
     Args:
@@ -1690,8 +1708,8 @@ def genet_large(pretrained=False, num_classes=1000, root="./GENet_params"):
             Default is ``False``.
         num_classes (int): number of classes to use in model,
             Default is ``1000``.
-        root (str): directory with checkpoint.
-            Default is ``"./GENet_params"``.
+        progress (bool): show download progress.
+            Default is ``True``.
 
     Raises:
         RuntimeError: when missing checkpoint
@@ -1719,21 +1737,32 @@ def genet_large(pretrained=False, num_classes=1000, root="./GENet_params"):
     )
 
     if pretrained:
-        pth_file = os.path.join(root, "GENet_large.pth")
-        if not os.path.isfile(pth_file):
-            raise RuntimeError(
-                "Cannnot find {}! Please download the GENet_*.pth and GENet_*.txt files to {}".format(
-                    pth_file, root
-                )
-            )
+        url = pretrained_states["large"]
+        model_dir = os.path.join(os.getenv("HOME"), ".cache", "torch", "genet")
 
-        checkpoint = torch.load(pth_file, map_location="cpu")
+        try:
+            os.makedirs(model_dir)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                # Directory already exists, ignore.
+                pass
+            else:
+                # Unexpected OSError, re-raise.
+                raise
+
+        filename = "large.pth"
+        cached_file = os.path.join(model_dir, filename)
+        if not os.path.exists(cached_file):
+            sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))
+            check_hash = None
+            download_url_to_file(url, cached_file, check_hash, progress=progress)
+        checkpoint = torch.load(cached_file, map_location="cpu")
         model.load_state_dict(checkpoint["state_dict"], strict=True)
 
     return model
 
 
-def genet_normal(pretrained=False, num_classes=1000, root="./GENet_params"):
+def genet_normal(pretrained=False, num_classes=1000, progress=True):
     """GPU Efficient Net normal.
 
     Args:
@@ -1742,8 +1771,8 @@ def genet_normal(pretrained=False, num_classes=1000, root="./GENet_params"):
             Default is ``False``.
         num_classes (int): number of classes to use in model,
             Default is ``1000``.
-        root (str): directory with checkpoint.
-            Default is ``"./GENet_params"``.
+        progress (bool): show download progress.
+            Default is ``True``.
 
     Raises:
         RuntimeError: when missing checkpoint
@@ -1771,21 +1800,32 @@ def genet_normal(pretrained=False, num_classes=1000, root="./GENet_params"):
     )
 
     if pretrained:
-        pth_file = os.path.join(root, "GENet_normal.pth")
-        if not os.path.isfile(pth_file):
-            raise RuntimeError(
-                "Cannnot find {}! Please download the GENet_*.pth and GENet_*.txt files to {}".format(
-                    pth_file, root
-                )
-            )
+        url = pretrained_states["normal"]
+        model_dir = os.path.join(os.getenv("HOME"), ".cache", "torch", "genet")
 
-        checkpoint = torch.load(pth_file, map_location="cpu")
+        try:
+            os.makedirs(model_dir)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                # Directory already exists, ignore.
+                pass
+            else:
+                # Unexpected OSError, re-raise.
+                raise
+
+        filename = "normal.pth"
+        cached_file = os.path.join(model_dir, filename)
+        if not os.path.exists(cached_file):
+            sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))
+            check_hash = None
+            download_url_to_file(url, cached_file, check_hash, progress=progress)
+        checkpoint = torch.load(cached_file, map_location="cpu")
         model.load_state_dict(checkpoint["state_dict"], strict=True)
 
     return model
 
 
-def genet_small(pretrained=False, num_classes=1000, root="./GENet_params"):
+def genet_small(pretrained=False, num_classes=1000, progress=True):
     """GPU Efficient Net small.
 
     Args:
@@ -1794,8 +1834,8 @@ def genet_small(pretrained=False, num_classes=1000, root="./GENet_params"):
             Default is ``False``.
         num_classes (int): number of classes to use in model,
             Default is ``1000``.
-        root (str): directory with checkpoint.
-            Default is ``"./GENet_params"``.
+        progress (bool): show download progress.
+            Default is ``True``.
 
     Raises:
         RuntimeError: when missing checkpoint
@@ -1823,15 +1863,26 @@ def genet_small(pretrained=False, num_classes=1000, root="./GENet_params"):
     )
 
     if pretrained:
-        pth_file = os.path.join(root, "GENet_small.pth")
-        if not os.path.isfile(pth_file):
-            raise RuntimeError(
-                "Cannnot find {}! Please download the GENet_*.pth and GENet_*.txt files to {}".format(
-                    pth_file, root
-                )
-            )
+        url = pretrained_states["small"]
+        model_dir = os.path.join(os.getenv("HOME"), ".cache", "torch", "genet")
 
-        checkpoint = torch.load(pth_file, map_location="cpu")
+        try:
+            os.makedirs(model_dir)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                # Directory already exists, ignore.
+                pass
+            else:
+                # Unexpected OSError, re-raise.
+                raise
+
+        filename = "small.pth"
+        cached_file = os.path.join(model_dir, filename)
+        if not os.path.exists(cached_file):
+            sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))
+            check_hash = None
+            download_url_to_file(url, cached_file, check_hash, progress=progress)
+        checkpoint = torch.load(cached_file, map_location="cpu")
         model.load_state_dict(checkpoint["state_dict"], strict=True)
 
     return model
