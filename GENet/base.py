@@ -3,7 +3,7 @@ Copyright (C) 2010-2020 Alibaba Group Holding Limited
 """
 
 import os
-import torch, argparse
+import torch
 from torch import nn
 import torch.nn.functional as F
 import numpy as np
