@@ -110,5 +110,11 @@ output = model(x)
 ```
 
 
+## UPDATES
+
+- **06 October 2020** - fixed `PlainModel` for training in **DataParallel**
+ and **DistributedDataParallel** model. Applied `black` to project.
+
+
 # License
 Copyright (C) 2010-2020 Alibaba Group Holding Limited. Released under the Apache License.
