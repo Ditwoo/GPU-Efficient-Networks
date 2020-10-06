@@ -113,7 +113,7 @@ output = model(x)
 ## UPDATES
 
 - **06 October 2020** - fixed `PlainModel` for training in **DataParallel**
- and **DistributedDataParallel** model. Applied `black` to project.
+ and **DistributedDataParallel** mode. Applied `black` to project.
 
 
 # License
