@@ -1699,7 +1699,7 @@ pretrained_states = {
 }
 
 
-def genet_large(pretrained=False, num_classes=1000, progress=True):
+def genet_large(pretrained=False, num_classes=1000, progress=True, **kwargs):
     """GPU Efficient Net large.
 
     Args:
@@ -1762,7 +1762,7 @@ def genet_large(pretrained=False, num_classes=1000, progress=True):
     return model
 
 
-def genet_normal(pretrained=False, num_classes=1000, progress=True):
+def genet_normal(pretrained=False, num_classes=1000, progress=True, **kwargs):
     """GPU Efficient Net normal.
 
     Args:
@@ -1825,7 +1825,7 @@ def genet_normal(pretrained=False, num_classes=1000, progress=True):
     return model
 
 
-def genet_small(pretrained=False, num_classes=1000, progress=True):
+def genet_small(pretrained=False, num_classes=1000, progress=True, **kwargs):
     """GPU Efficient Net small.
 
     Args:
