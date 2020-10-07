@@ -70,7 +70,7 @@ First, load pre-trained GENets:
 ```python
 import GENet
 import torch
-from torch import nn
+
 arch = 'GENet_large'
 if arch == 'GENet_large':
     input_image_size = 256
@@ -109,11 +109,23 @@ x = x.cuda(gpu)
 output = model(x)
 ```
 
+To load models with torch.hub:
+
+```python
+import torch
+
+genet_small = torch.hub.load("Ditwoo/GPU-Efficient-Networks", "genet_small", pretrained=True)
+genet_normal = torch.hub.load("Ditwoo/GPU-Efficient-Networks", "genet_normal", pretrained=True)
+genet_large = torch.hub.load("Ditwoo/GPU-Efficient-Networks", "genet_large", pretrained=True)
+```
+
 
 ## UPDATES
 
 - **06 October 2020** - fixed `PlainModel` for training in **DataParallel**
  and **DistributedDataParallel** mode. Applied `black` to project.
+
+- **08 October 2020** - torch hub support.
 
 
 # License
