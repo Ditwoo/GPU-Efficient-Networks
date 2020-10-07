@@ -101,7 +101,7 @@ torch.cuda.set_device(gpu)
 model = model.cuda(0)
 ```
 
-To inference,
+To inference:
 
 ```python
 x = get_one_image_from_your_dataset(input_image_size=input_image_size)
@@ -109,7 +109,7 @@ x = x.cuda(gpu)
 output = model(x)
 ```
 
-To load models with torch.hub:
+To load models with `torch.hub`:
 
 ```python
 import torch
