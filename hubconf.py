@@ -1,3 +1,3 @@
 dependencies = ["pytorch"]
 
-from .base import genet_small, genet_normal, genet_large
+from GENet import genet_small, genet_normal, genet_large
